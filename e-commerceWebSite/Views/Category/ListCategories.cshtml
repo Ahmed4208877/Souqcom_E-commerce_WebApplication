@@ -1,0 +1,166 @@
+﻿@model List<TbCategory>
+@{
+    Layout = "_Layout";
+}
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/extensions/dataTables.checkboxes.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/data-list-view.css">
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <!-- Data list view starts -->
+            <section id="data-list-view" class="data-list-view-header">
+                <div class="btn-group dropdown actions-dropodown">
+                    <button class="btn btn-outline-primary" id="AddNewCategory" tabindex="0" aria-controls="DataTables_Table_0"><span><i class="feather icon-plus"></i> Add New Category</span></button>
+                </div>
+                <!-- DataTable starts -->
+                <div class="table-responsive">
+                    <table class="table data-list-view">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>NAME</th>
+                                <th>TOTAL PRODUCTS</th>
+                                <th>INSERTION DATE</th>
+                                <th>MODIFIED DATE</th>
+                                <th>EDIT</th>
+                                <th>DELETE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Category in Model)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td class="product-name">@Category.Name</td>
+                                    <td class="product-price">@Category.Products.Count</td>
+                                    <td class="product-price">@Category.InsertionDate</td>
+                                    <td class="product-price">@Category.ModifiedDate</td>
+                                    <td class="product-action">
+                                        <button onclick="EditCategory(@Category.Id)" class="btn btn-outline-info"><span><i class="feather icon-edit"></i>Edit</span></button>
+                                    </td>
+                                    <td class="product-action">
+                                        <button onclick="showConfirmModal(@Category.Id,'@Category.Name')" class="btn btn-outline-danger"><span><i class="feather icon-trash"></i>Delete</span></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- DataTable ends -->
+            </section>
+            <!-- Data list view end -->
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<div class="modal fade text-left" id="CategoryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel1"><span><i class="feather icon-plus"></i></span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+            </div>
+        </div>
+    </div>
+</div>
+<!--Conformition Modal-->
+<div class="modal fade text-left" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+                <div id="Name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="confirmYes()">Yes</button>
+                <button class="btn btn-primary" onclick="hideConfirmModal()">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/app-assets/vendors/js/extensions/dropzone.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/dataTables.select.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.checkboxes.min.js"></script>
+    <script src="~/app-assets/js/scripts/ui/data-list-view.js"></script>
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        let _CategoryId;
+        $('#AddNewCategory').click(function () {
+            document.getElementById("myModalLabel1").textContent = "";
+            var url = "/Category/AddNewCategory";
+            $.get(url, function (data) {
+                document.getElementById("myModalLabel1").textContent = "Add New Category";
+                $('#modalbody').html(data);
+                var form = document.getElementById("Form");
+                $(form).removeData("validator")    // Added by jQuery Validation
+                    .removeData("unobtrusiveValidation");   // Added by jQuery Unobtrusive Validation
+                $.validator.unobtrusive.parse(form);
+                /************* */
+
+                $('#CategoryModal').modal('show');
+            });
+        });
+        function EditCategory(CategoryId) {
+            document.getElementById("myModalLabel1").textContent = "";
+            $.ajax({
+                url: "/Category/EditCategory",
+                data: { "CategoryId": CategoryId },
+                success: function (result) {
+                    document.getElementById("myModalLabel1").textContent = "Edit Category";
+                    $("#modalbody").html(result);
+                    var form = document.getElementById("Form");
+                    $(form).removeData("validator")    // Added by jQuery Validation
+                        .removeData("unobtrusiveValidation");  // Added by jQuery Unobtrusive Validation
+                    $.validator.unobtrusive.parse(form);
+
+                    $('#CategoryModal').modal('show');
+                }
+            });
+        }        
+        function showConfirmModal(CategoryId, name) {
+            $('#confirmModal').modal('show');
+            document.getElementById("Name").innerHTML = "";
+            document.getElementById("Name").innerHTML += "<h5 class='modal-title'> Are you Sure to Delete " + name + " ? </h5>";
+            _CategoryId = CategoryId;
+        }
+        function confirmYes() {
+            $.ajax({
+                url: "/Category/DeleteCategory",
+                data: { "Id": _CategoryId },
+                success: function (result) {
+                    if (result === true) {                     
+                        location.reload();
+                    }
+                }
+            });
+            hideConfirmModal();
+
+        }
+        function hideConfirmModal() {
+            $('#confirmModal').modal('hide');
+        }
+
+    </script>
+
+}
+

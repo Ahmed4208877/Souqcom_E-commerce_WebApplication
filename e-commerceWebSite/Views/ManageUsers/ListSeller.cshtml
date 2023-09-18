@@ -1,0 +1,168 @@
+﻿@model List<ApplicationUser>
+@{
+    Layout = "_Layout";
+}
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/extensions/dataTables.checkboxes.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/data-list-view.css">
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <!-- Data list view starts -->
+            <section id="data-list-view" class="data-list-view-header">
+                <div class="btn-group dropdown actions-dropodown">
+                    <button class="btn btn-outline-primary" id="AddNewSeller" tabindex="0" aria-controls="DataTables_Table_0"><span><i class="feather icon-plus"></i> Add New Seller</span></button>
+                </div>
+                <!-- DataTable starts -->
+                <div class="table-responsive">
+                    <table class="table data-list-view">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>USERNAME</th>
+                                <th>EMAIL</th>
+                                <th>PHONE NUMBER</th>
+                                <th>ACTIVATION STATE</th>
+                                <th>PRODUCT'S NUMBER</th>
+                                <th>RESET PASSWORD</th>
+                                <th>CHANGE ACTIVAITY</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var seller in Model)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td class="product-name">@seller.UserName</td>
+                                    <td class="product-price">@seller.Email</td>
+                                    <td class="product-price">@seller.PhoneNumber</td>
+                                    <td class="product-price">@seller.IsActive</td>
+                                    <td class="product-price">@seller.Products.Count</td>
+                                    <td class="product-action">
+                                        <button onclick="ResetSellerPassword('@seller.Id')" class="btn btn-outline-info"><span><i class="feather icon-edit"></i> Reset Password</span></button>
+                                    </td>
+                                    <td class="product-action">
+                                        <button onclick="showConfirmModal('@seller.Id','@seller.UserName')" class="btn btn-outline-warning mr-1 mb-1"><span><i class="feather icon-user-check"></i> Change</span></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- DataTable ends -->
+            </section>
+            <!-- Data list view end -->
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<div class="modal fade text-left" id="SellerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel1"><span><i class="feather icon-plus"></i></span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+            </div>
+        </div>
+    </div>
+</div>
+<!--Conformition Modal-->
+<div class="modal fade text-left" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+                <div id="Name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="confirmYes()">Yes</button>
+                <button class="btn btn-danger" onclick="hideConfirmModal()">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/app-assets/vendors/js/extensions/dropzone.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/dataTables.select.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.checkboxes.min.js"></script>
+    <script src="~/app-assets/js/scripts/ui/data-list-view.js"></script>
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        let _SellerId ="";
+        $('#AddNewSeller').click(function () {
+            document.getElementById("myModalLabel1").textContent = "";
+            var url = "/ManageUsers/RegisterSeller";
+            $.get(url, function (data) {
+                document.getElementById("myModalLabel1").textContent = "Add New Seller";
+                $('#modalbody').html(data);
+                var form = document.getElementById("Form");
+                $(form).removeData("validator")    // Added by jQuery Validation
+                    .removeData("unobtrusiveValidation");   // Added by jQuery Unobtrusive Validation
+                $.validator.unobtrusive.parse(form);
+                /************* */
+
+                $('#SellerModal').modal('show');
+            });
+        });
+        function ResetSellerPassword(SellerId) {
+            document.getElementById("myModalLabel1").textContent = "";
+            $.ajax({
+                url: "/ManageUsers/ReSetPassword",
+                data: { "_UserId": SellerId },
+                success: function (result) {
+                    document.getElementById("myModalLabel1").textContent = "Reset Password";
+                    $("#modalbody").html(result);
+                    var form = document.getElementById("Form");
+                    $(form).removeData("validator")    // Added by jQuery Validation
+                        .removeData("unobtrusiveValidation");  // Added by jQuery Unobtrusive Validation
+                    $.validator.unobtrusive.parse(form);
+
+                    $('#SellerModal').modal('show');
+                }
+            });
+        }
+        function showConfirmModal(SellerId, name) {
+            $('#confirmModal').modal('show');
+            document.getElementById("Name").innerHTML = "";
+            document.getElementById("Name").innerHTML += "<h5 class='modal-title'> Are you Sure to Change The Activation State to " + name + " ? </h5>";
+            _SellerId = SellerId;
+        }
+        function confirmYes() {
+            $.ajax({
+                url: "/ManageUsers/ChangeActivity",
+                data: { "UserId": _SellerId },
+                success: function (result) {
+                    if (result === true) {
+                        location.reload();
+                    }
+                }
+            });
+            hideConfirmModal();
+
+        }
+        function hideConfirmModal() {
+            $('#confirmModal').modal('hide');
+        }
+
+    </script>
+
+}
+
+

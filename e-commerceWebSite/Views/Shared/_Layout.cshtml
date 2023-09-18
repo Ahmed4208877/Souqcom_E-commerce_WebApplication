@@ -1,0 +1,193 @@
+﻿@using System.Security.Claims;
+@using e_commerceWebSite.Repository;
+@inject Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> UserManager
+@inject IHttpContextAccessor _HttpContextAccessor
+@inject INotificationService _NotificationService
+@{
+    string ID =_HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    string imagePath = UserManager.Users.FirstOrDefault(i => i.Id == ID).ImagePath;
+    List<TbNotification> notifications = _NotificationService.GetAll();
+    int NumberNotify = notifications.Count();
+}
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>Souqcom</title>
+    <link rel="apple-touch-icon" href="~/app-assets/images/ico/apple-icon-120.png">
+    <link rel="shortcut icon" type="image/x-icon" href="~/app-assets/images/ico/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600" rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/vendors.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/charts/apexcharts.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/extensions/tether-theme-arrows.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/extensions/tether.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/extensions/shepherd-theme-default.css">
+    <!-- END: Vendor CSS-->
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/bootstrap-extended.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/colors.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/components.css">
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/menu/menu-types/vertical-menu.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/core/colors/palette-gradient.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/dashboard-ecommerce.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/card-analytics.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/plugins/tour/tour.css">
+    <!-- END: Page CSS-->
+    <!-- BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="~/assets/css/style.css">
+    @RenderSection("styles", required: false)
+
+    <!-- END: Custom CSS-->
+
+</head>
+<!-- END: Head-->
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-menu-modern 2-columns  navbar-floating footer-static  menu-collapsed" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
+
+    <!-- BEGIN: Header-->
+    <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu floating-nav navbar-light navbar-shadow">
+        <div class="navbar-wrapper">
+            <div class="navbar-container content">
+                <div class="navbar-collapse" id="navbar-mobile">
+                    <div class="mr-auto float-left bookmark-wrapper d-flex align-items-center">
+                        <ul class="nav navbar-nav bookmark-icons">
+                            <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-placement="top"><b>Control Panal</b></a></li>
+                        </ul>
+                    </div>
+                    <ul class="nav navbar-nav float-right">
+                        <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-expand"><i class="ficon feather icon-maximize"></i></a></li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="dropdown dropdown-notification nav-item">
+                                <a class="nav-link nav-link-label" asp-controller="Admin" asp-action="ListNotifications" ><i class="ficon feather icon-bell"></i><span class="badge badge-pill badge-primary badge-up">@NumberNotify</span></a>
+                            </li>
+                        }                        
+                        <li class="dropdown dropdown-user nav-item">
+                            <a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+                                <div class="user-nav d-sm-flex d-none"><span class="user-name text-bold-600">@User.Identity.Name</span><span class="user-status">Available</span></div><span><img class="round" src="@string.Format("/Images/Users/{0}",imagePath)" alt="avatar" height="40" width="40"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" asp-controller="Account" asp-action="EditProfile"><i class="feather icon-user"></i> Edit Profile</a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword"><i class="feather icon-lock"></i> Change Password</a>
+                                }
+                                <div class="dropdown-divider"></div><a class="dropdown-item" asp-controller="Account" asp-action="Logout"><i class="feather icon-power"></i> Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- END: Header-->
+    <!-- BEGIN: Main Menu-->
+    <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+        <div class="navbar-header">
+            <ul class="nav navbar-nav flex-row">
+                <li class="nav-item mr-auto">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand" asp-controller="Admin" asp-action="Dashboard">
+                            <div class="brand-logo"></div>
+                            <h5 class="brand-text mb-0">Souqcom</h5>
+                        </a>
+                    }else
+                    {
+                        <a class="navbar-brand" asp-controller="Product" asp-action="ListProducts" asp-route-SellerId="@ID">
+                            <div class="brand-logo"></div>
+                            <h5 class="brand-text mb-0">Souqcom</h5>
+                        </a>
+                    }                    
+                </li>
+                <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i class="feather icon-x d-block d-xl-none font-medium-8 primary toggle-icon"></i><i class="toggle-icon feather icon-disc font-medium-4 d-none d-xl-block collapse-toggle-icon primary" data-ticon="icon-disc"></i></a></li>
+            </ul>
+        </div>
+        <div class="shadow-bottom"></div>
+        <div class="main-menu-content">
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class=" nav-item">
+                        <a asp-controller="Admin" asp-action="Dashboard"><i class="feather icon-home"></i><span class="menu-title" data-i18n="Dashboard">Dashboard</span></a>
+                    </li>
+                    <li class=" navigation-header">
+                        <span>Apps</span>
+                    </li>
+                    <li class=" nav-item">
+                        <a asp-controller="Category" asp-action="ListCategories"><i class="feather icon-list"></i><span class="menu-title" data-i18n="Categories">Categories</span></a>
+                    </li>
+                    <li class=" nav-item">
+                        <a href="#"><i class="feather icon-users"></i><span class="menu-title" data-i18n="User">Application Users</span></a>
+                        <ul class="menu-content">
+                            <li>
+                                <a asp-controller="ManageUsers" asp-action="ListSeller"><i class="feather icon-circle"></i><span class="menu-item" data-i18n="List">Sellers</span></a>
+                            </li>
+                            <li>
+                                <a asp-controller="ManageUsers" asp-action="ListCustomers"><i class="feather icon-circle"></i><span class="menu-item" data-i18n="View">Customers</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class=" navigation-header">
+                        <span>Apps</span>
+                    </li>
+                    <li class=" nav-item">
+                        <a asp-controller="Product" asp-action="ListProducts" asp-route-SellerId="@ID"><i class="feather icon-list"></i><span class="menu-title" data-i18n="Products">Products</span></a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <!-- END: Main Menu-->
+    <!-- BEGIN: Content-->
+    @RenderBody()
+
+    <!-- END: Content-->
+
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <!-- BEGIN: Footer-->
+    <footer class="footer footer-static footer-light">
+        <p class="clearfix blue-grey lighten-2 mb-0">
+            <span class="float-md-left d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2023, All rights Reserved</span><span class="float-md-right d-none d-md-block">Hand-crafted & Made with<i class="feather icon-heart pink"></i></span>
+            <button class="btn btn-primary btn-icon scroll-top" type="button"><i class="feather icon-arrow-up"></i></button>
+        </p>
+    </footer>
+    <!-- END: Footer-->
+    <!-- BEGIN: Vendor JS-->
+    <script src="~/app-assets/vendors/js/vendors.min.js"></script>
+    <!-- BEGIN Vendor JS-->
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="~/app-assets/vendors/js/charts/apexcharts.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/tether.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/shepherd.min.js"></script>
+    <!-- END: Page Vendor JS-->
+    <!-- BEGIN: Theme JS-->
+    <script src="~/app-assets/js/core/app-menu.js"></script>
+    <script src="~/app-assets/js/core/app.js"></script>
+    <script src="~/app-assets/js/scripts/components.js"></script>
+    <!-- END: Theme JS-->
+    <!-- BEGIN: Page JS-->
+    <script src="~/app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
+    @RenderSection("Scripts", required: false)
+    @await Component.InvokeAsync("NToastNotify")
+    <!-- END: Page JS-->
+
+</body>
+<!-- END: Body-->
+
+</html>

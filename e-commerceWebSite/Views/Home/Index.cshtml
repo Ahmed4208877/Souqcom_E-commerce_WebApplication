@@ -1,0 +1,228 @@
+﻿@model VmUserHome
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-detached content-right">
+            <div class="content-body">
+                <!-- Ecommerce Content Section Starts -->
+                <section id="ecommerce-header">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="ecommerce-header-items">
+                                <div class="result-toggler">
+                                    <button class="navbar-toggler shop-sidebar-toggler" type="button" data-toggle="collapse">
+                                        <span class="navbar-toggler-icon d-block d-lg-none"><i class="feather icon-menu"></i></span>
+                                    </button>
+                                    <div class="search-results">
+                                        @Model.products.Count() results found
+                                    </div>
+                                </div>
+                                <div class="view-options">
+                                    <select class="price-options form-control" id="ecommerce-price-options">
+                                        <option selected>Featured</option>
+                                        <option value="Lowest">Lowest</option>
+                                        <option value="Highest">Highest</option>
+                                    </select>
+                                    <div class="view-btn-option">
+                                        <button class="btn btn-white view-btn grid-view-btn active">
+                                            <i class="feather icon-grid"></i>
+                                        </button>
+                                        <button class="btn btn-white list-view-btn view-btn">
+                                            <i class="feather icon-list"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Ecommerce Content Section Starts -->
+                <!-- background Overlay when sidebar is shown  starts-->
+                <div class="shop-content-overlay"></div>
+                <!-- background Overlay when sidebar is shown  ends-->
+                <!-- Ecommerce Search Bar Starts -->
+                <section id="ecommerce-searchbar">
+                    <div class="row mt-1">
+                        <div class="col-sm-12">
+                            <fieldset class="form-group position-relative">
+                                <input type="text" class="form-control search-product" ontextch id="Searsh" placeholder="Search here">
+                                <div class="form-control-position">
+                                    <i class="feather icon-search"></i>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </section>
+                <!-- Ecommerce Search Bar Ends -->
+                <!-- Ecommerce Products Starts -->
+                <section id="ecommerce-products" class="grid-view">
+                  
+                </section>
+                <!-- Ecommerce Products Ends -->
+            </div>
+        </div>
+        <div class="sidebar-detached sidebar-left">
+            <div class="sidebar">
+                <!-- Ecommerce Sidebar Starts -->
+                <div class="sidebar-shop" id="ecommerce-sidebar-toggler">
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h6 class="filter-heading d-none d-lg-block">Filters</h6>
+                        </div>
+                    </div>
+                    <span class="sidebar-close-icon d-block d-md-none">
+                        <i class="feather icon-x"></i>
+                    </span>
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Categories Starts -->
+                            <div id="product-categories">
+                                <div class="product-category-title">
+                                    <h6 class="filter-title mb-1">Categories</h6>
+                                </div>
+                                <ul class="list-unstyled categories-list">
+                                    <li>
+                                        <span class="vs-radio-con vs-radio-primary py-25">
+                                            <input type="radio" name="category-filter" onclick="GetProductsPerCategory(0)" checked>
+                                            <span class="vs-radio">
+                                                <span class="vs-radio--border"></span>
+                                                <span class="vs-radio--circle"></span>
+                                            </span>
+                                            <span class="ml-50">All</span>
+                                        </span>
+                                    </li>
+                                    @foreach (var category in Model.categories)
+                                    {
+                                        <li>
+                                            <span class="vs-radio-con vs-radio-primary py-25">
+                                                <input type="radio" name="category-filter" onclick="GetProductsPerCategory(@category.Id)">
+                                                <span class="vs-radio">
+                                                    <span class="vs-radio--border"></span>
+                                                    <span class="vs-radio--circle"></span>
+                                                </span>
+                                                <span class="ml-50">@category.Name</span>
+                                            </span>
+                                        </li>
+
+                                    }
+                                </ul>
+                            </div>
+                            <!-- Categories Ends -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Ecommerce Sidebar Ends -->
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+
+
+
+
+
+
+
+@section Scripts{
+    
+    <script>
+        function Templete(product) {
+            let productbody = "<div class='card ecommerce-card'>";
+            productbody = productbody + "<div class='card-content'>";
+            productbody = productbody + "<div class='item-img text-center'>";
+            productbody = productbody + "<a href='/Home/ProductDetails/" + product.id + "'>";
+            productbody = productbody + "<img width='50%' height='50%' class='img-fluid' src='/Images/Products/" + product.imagePath + "' alt='img-placeholder'>";
+            productbody = productbody + "</a>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "<div class='card-body'>";
+            productbody = productbody + "<div class='item-wrapper'>";
+            productbody = productbody + "<div>";
+            productbody = productbody + "<h6 class='item-price'>" + product.price + "E£</h6>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "<div class='item-name'>";
+            productbody = productbody + "<a href='/Home/ProductDetails/" + product.id + "'>" + product.name + "-" + product.categoryName + "</a>";
+            productbody = productbody + "<p class='item-company'>By <span class='company-name'>" + product.sellerName + "</span></p>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "<div>";
+            productbody = productbody + "<p class='item-description'>" + product.description + "</p>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "<div class='item-options text-center'>";
+            productbody = productbody + "<div class='item-wrapper'>";
+            productbody = productbody + "<div class='item-cost'>";
+            productbody = productbody + "<h6 class='item-price'>" + product.price + "E£</h6>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "<div class='wishlist'>";
+            productbody = productbody + "<a href='/Cart/AddToCart/" + product.id + "'><i class='feather icon-shopping-cart'></i> <span class='add-to-cart'>Add to cart</span> </a>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "</div>";
+            productbody = productbody + "</div>";
+
+            return productbody;
+        }
+        let Products = [];
+        $.ajax({
+            url: "/Home/GetAjaxProducts",
+            data: { "CategoryId": 0 },
+            success: function (data) {
+                let itemHtml = "";
+                Products = data;
+                for (let i = 0; i < data.length; i++) {
+                    itemHtml = itemHtml + Templete(data[i]);
+                }
+                $("#ecommerce-products").html(itemHtml);
+            }
+        });
+
+        function GetProductsPerCategory(categoryId) {
+            let itemHtml = "";
+            $.ajax({
+                url: "/Home/GetAjaxProducts",
+                data: { "CategoryId": categoryId },
+                success: function (data) {
+                    Products = data;
+                    for (let i = 0; i < data.length; i++) {
+
+                        itemHtml = itemHtml + Templete(data[i]);
+                    }
+                    $("#ecommerce-products").html(itemHtml);
+                }
+            });
+        }
+        $("#Searsh").keyup(function () {
+            let userinput = $(this).val();
+            let itemHtml = "";
+            for (let i = 0; i < Products.length; i++) {
+                if (Products[i].name.toLowerCase().indexOf(userinput.toLowerCase()) != -1) {
+                    itemHtml = itemHtml + Templete(Products[i]);
+                }
+            }
+            $("#ecommerce-products").html(itemHtml);
+        });
+        $("#ecommerce-price-options").on("change", function () {
+            let selectedOption = $(this).val();
+            let itemHtml = "";
+            if (selectedOption === "Lowest") {
+                Products.sort(function (a, b) { return a.price - b.price });
+                for (let i = 0; i < Products.length; i++) {
+                        itemHtml = itemHtml + Templete(Products[i]);              
+                }
+                $("#ecommerce-products").html(itemHtml);
+            }
+            if (selectedOption === "Highest") {
+                Products.sort((a, b) => b.price - a.price);
+                for (let i = 0; i < Products.length; i++) {
+                    itemHtml = itemHtml + Templete(Products[i]);
+                }
+                $("#ecommerce-products").html(itemHtml);
+            }
+        });
+    </script>
+    
+}

@@ -1,0 +1,62 @@
+﻿@model List<VmProduct>
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/extensions/dataTables.checkboxes.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/data-list-view.css">
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <!-- Data list view starts -->
+            <section id="data-thumb-view" class="data-thumb-view-header">
+                <!-- dataTable starts -->
+                <div class="table-responsive">
+                    <table class="table data-thumb-view">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Image</th>
+                                <th>NAME</th>
+                                <th>CATEGORY</th>
+                                <th>QUANTITY</th>
+                                <th>PRICE</th>
+                                <th>TOTAL PRICE</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Product in Model)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td class="product-img">
+                                        <img src="@string.Format("/Images/Products/{0}",Product.ImagePath)" alt="Img placeholder">
+                                    </td>
+                                    <td class="product-name">@Product.Name</td>
+                                    <td class="product-category">@Product.CategoryName</td>
+                                    <td>@Product.Quantity</td>
+                                    <td class="product-price">@Product.Price E£</td>
+                                    <td class="product-price">@Product.Total E£</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- dataTable ends -->
+            </section>
+            <!-- Data list view end -->
+
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+@section Scripts{
+    <script src="~/app-assets/vendors/js/extensions/dropzone.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/dataTables.select.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.checkboxes.min.js"></script>
+    <script src="~/app-assets/js/scripts/ui/data-list-view.js"></script>
+}

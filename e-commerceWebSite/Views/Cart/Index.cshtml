@@ -1,0 +1,187 @@
+﻿@model VmShopingCart
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/forms/spinner/jquery.bootstrap-touchspin.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/extensions/toastr.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/plugins/forms/wizard.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/plugins/extensions/toastr.css">
+    
+}
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <form action="#" class="icons-tab-steps checkout-tab-steps wizard-circle">
+                <!-- Checkout Place order starts -->
+                <h6><i class="step-icon step feather icon-shopping-cart"></i>Cart</h6>
+                <fieldset class="checkout-step-1 px-0">
+                    <section id="place-order" class="list-view product-checkout">
+                        <div class="checkout-items">
+
+                            @foreach (var product in Model.ListShopingCartProducts)
+                            {
+                                <div class="card ecommerce-card">
+                                    <div class="card-content">
+                                        <div class="item-img text-center">
+                                            <a asp-controller="Home" asp-action="ProductDetails" asp-route-Id="@product.Id">
+                                                <img class="img-fluid" src="@string.Format("/Images/Products/{0}",product.ImagePath)" alt="img-placeholder">
+                                            </a>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="item-name">
+                                                <a asp-controller="Home" asp-action="ProductDetails" asp-route-Id="@product.Id">@product.Name - @product.CategoryName</a>
+                                                <span></span>
+                                                <p class="item-company">By <span class="company-name">@product.SellerName</span></p>
+                                                <p class="stock-status-in">In Stock</p>
+                                            </div>
+                                            <div class="item-quantity">
+                                                <p class="quantity-title">Quantity</p>
+                                                <div class="input-group quantity-counter-wrapper">                                                    
+                                                    <input  type="number" class="quantity-counter" data-price="@product.Price" data-productid="@product.Id" value="@product.Quantity">                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="item-options text-center">
+                                            <div class="item-wrapper">
+                                                <div class="item-cost">
+                                                    <h6 class="item-price">
+                                                        @product.Price E£
+                                                    </h6>
+                                                    <p class="shipping">
+                                                        <i class="feather icon-shopping-cart"></i> Free Shipping
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="wishlist">
+                                                <a asp-controller="Cart" asp-action="DeleteFromCart" asp-route-Id="@product.Id"><i class="feather icon-x align-middle"></i> Remove</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <div class="checkout-options">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <p class="options-title">Options</p>
+                                        <div class="coupons">
+                                            <div class="coupons-title">
+                                                <p>Coupons</p>
+                                            </div>
+                                            <div class="apply-coupon">
+                                                <p>Apply</p>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="price-details">
+                                            <p>Price Details</p>
+                                        </div>
+                                        <div class="detail">
+                                            <div class="detail-title">
+                                                Total Price
+                                            </div>
+                                            <div id="total1" class="detail-amt">
+                                                @Model.TotalPrice
+                                            </div>
+                                        </div>
+                                        <div class="detail">
+                                            <div class="detail-title">
+                                                Bag Discount
+                                            </div>
+                                            <div class="detail-amt discount-amt">
+                                                0
+                                            </div>
+                                        </div>
+                                        <div class="detail">
+                                            <div class="detail-title">
+                                                Estimated Tax
+                                            </div>
+                                            <div class="detail-amt">
+                                                0
+                                            </div>
+                                        </div>
+                                        <div class="detail">
+                                            <div class="detail-title">
+                                                Delivery Charges
+                                            </div>
+                                            <div class="detail-amt discount-amt">
+                                                Free
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="detail">
+                                            <div class="detail-title detail-total">Total</div>
+                                            <div id="total2" class="detail-amt total-amt">@Model.TotalPrice </div>
+                                        </div>
+                                        <a asp-controller="Cart" asp-action="FinishCartAndSave" class="btn btn-primary btn-block place-order">PLACE ORDER</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </fieldset>
+                <!-- Checkout Place order Ends -->
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+
+<div class="modal fade text-left" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+                <div>
+                    <h5 class='modal-title'>No More In Stock!</h5>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="hideConfirmModal()">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/app-assets/vendors/js/forms/spinner/jquery.bootstrap-touchspin.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/jquery.steps.min.js"></script>
+    <script src="~/app-assets/vendors/js/forms/validation/jquery.validate.min.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/toastr.min.js"></script>
+    <script src="~/app-assets/js/scripts/forms/number-input.js"></script>
+    <script>    
+        $(document).on("change", ".quantity-counter", function () {
+            let total = 0;
+            let Qty = 0;
+            $(".quantity-counter").each(function (index, element) {
+                total = total + parseFloat($(element).val()) * parseFloat($(element).data("price"));
+            });            
+            Qty = $(this).val();
+            var productId = $(this).data("productid");
+            console.log(productId);
+            $.ajax({
+                url: "/Cart/ChangeTotalAndQuantity",
+                data: { "ProductId": productId, "Quantity": Qty },
+                success: function (result) {
+                    if (result === true) {
+                        $("#total1").html(total);
+                        $("#total2").html(total);
+                    }                   
+                },
+                error: function () {
+                    showConfirmModal();
+                }
+            });
+        });
+        function showConfirmModal() {
+            $('#confirmModal').modal('show');         
+        }   
+        function hideConfirmModal() {
+            $('#confirmModal').modal('hide');
+        }
+    </script>
+}

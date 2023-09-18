@@ -1,0 +1,56 @@
+﻿@model List<TbCart>
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/extensions/dataTables.checkboxes.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/data-list-view.css">
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <!-- Data list view starts -->
+            <section id="data-list-view" class="data-list-view-header">
+                <!-- DataTable starts -->
+                <div class="table-responsive">
+                    <table class="table data-list-view">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>SHOPPING DATE</th>
+                                <th>TOTAL PRICE</th>
+                                <th>VIEW</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Cart in Model)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td class="product-name">@Cart.InsertionData</td>
+                                    <td class="product-price">@Cart.Total_Price E£</td>
+                                    <td>
+                                        <a asp-controller="Cart" asp-action="CartDetails" asp-route-CartId="@Cart.Id" class="btn btn-outline-info mr-1 mb-1" role="button">View Details</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- DataTable ends -->
+            </section>
+            <!-- Data list view end -->
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+@section Scripts{
+    <script src="~/app-assets/vendors/js/extensions/dropzone.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/dataTables.select.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.checkboxes.min.js"></script>
+    <script src="~/app-assets/js/scripts/ui/data-list-view.js"></script>
+}
+

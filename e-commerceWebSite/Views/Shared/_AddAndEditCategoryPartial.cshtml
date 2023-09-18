@@ -1,0 +1,17 @@
+﻿@model TbCategory
+@{
+    string type = (Model.Id == 0 || Model == null) ? "AddNewCategory" : "EditCategory";
+}
+<form method="post" id="Form" asp-controller="Category" asp-action="@type" asp-route-Id="@Model.Id">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="InsertionDate" value="@Model.InsertionDate" type="hidden" />
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>

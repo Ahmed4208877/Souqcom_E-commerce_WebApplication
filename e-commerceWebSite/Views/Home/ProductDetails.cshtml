@@ -1,0 +1,108 @@
+﻿@model VmProductDetails
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/forms/spinner/jquery.bootstrap-touchspin.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/extensions/swiper.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/app-ecommerce-details.css">
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <!-- app ecommerce details start -->
+            <section class="app-ecommerce-details">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-5 mt-2">
+                            <div class="col-12 col-md-5 d-flex align-items-center justify-content-center mb-2 mb-md-0">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <img src="@string.Format("/Images/Products/{0}",Model.Product.ImagePath)" class="img-fluid" alt="product image">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <h5>
+                                    @Model.Product.Name
+                                </h5>
+                                <p class="text-muted">@Model.Product.Category.Name</p>
+                                <div class="ecommerce-details-price d-flex flex-wrap">
+                                    <p class="text-primary font-medium-3 mr-1 mb-0">@Model.Product.Price E£</p>
+                                </div>
+                                <hr>
+                                <p>
+                                    @Model.Product.Description
+                                </p>
+                                <p class="font-weight-bold mb-25">
+                                    <i class="feather icon-truck mr-50 font-medium-2"></i>Free Shipping
+                                </p>
+                                <p class="font-weight-bold">
+                                    <i class="feather icon-dollar-sign mr-50 font-medium-2"></i>EMI options available
+                                </p>
+                                <hr>
+                                <p>Available - <span class="text-success">In stock</span></p>
+
+                                <div class="d-flex flex-column flex-sm-row">
+                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-Id="@Model.Product.Id" class="btn btn-primary mr-0 mr-sm-1 mb-1 mb-sm-0"><i class="feather icon-shopping-cart mr-25"></i>ADD TO CART</a>
+                                    <button class="btn btn-outline-danger"><i class="feather icon-heart mr-25"></i>WISHLIST</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mt-4 mb-2 text-center">
+                            <h2>RELATED PRODUCTS</h2>
+                            <p>People also search for this items</p>
+                        </div>
+                        <div class="swiper-responsive-breakpoints swiper-container px-4 py-2">
+                            <div class="swiper-wrapper">
+                                @foreach (var Product in Model.RelatedProducts)
+                                {
+                                    <div class="swiper-slide rounded swiper-shadow">
+                                        <div class="item-heading">
+                                            <p class="text-truncate mb-0">
+                                                @Product.Name
+                                            </p>
+                                            <p>
+                                                <small>by</small>
+                                                <small>@Product.Seller.UserName</small>
+                                            </p>
+                                        </div>
+                                        <div class="img-container w-50 mx-auto my-2 py-75">
+                                            <a asp-controller="Home" asp-action="ProductDetails" asp-route-Id="@Product.Id">
+                                                <img src="@string.Format("/Images/Products/{0}",Product.ImagePath)" class="img-fluid" alt="image">
+                                            </a>
+                                        </div>
+                                        <div class="item-meta">
+                                            <div class="product-rating">
+                                                <i class="feather icon-star text-warning"></i>
+                                                <i class="feather icon-star text-warning"></i>
+                                                <i class="feather icon-star text-warning"></i>
+                                                <i class="feather icon-star text-warning"></i>
+                                                <i class="feather icon-star text-secondary"></i>
+                                            </div>
+                                            <p class="text-primary mb-0">@Product.Price E£</p>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                            <!-- Add Arrows -->
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- app ecommerce details end -->
+
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+@section Scripts{
+    <script src="~/app-assets/vendors/js/forms/spinner/jquery.bootstrap-touchspin.js"></script>
+    <script src="~/app-assets/vendors/js/extensions/swiper.min.js"></script>
+    <script src="~/app-assets/js/scripts/pages/app-ecommerce-details.js"></script>
+    <script src="~/app-assets/js/scripts/forms/number-input.js"></script>
+}

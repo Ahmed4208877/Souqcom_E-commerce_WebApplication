@@ -1,0 +1,207 @@
+﻿@model List<TbProduct>
+@{
+    Layout = "_Layout";
+}
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/extensions/dataTables.checkboxes.css">
+    <link rel="stylesheet" type="text/css" href="~/app-assets/css/pages/data-list-view.css">
+
+}
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-body">
+            <!-- Data list view starts -->
+            <section id="data-thumb-view" class="data-thumb-view-header">
+
+                <div class="btn-group dropdown actions-dropodown">
+                    <button class="btn btn-outline-primary" id="AddNewProduct" tabindex="0" aria-controls="DataTables_Table_0"><span><i class="feather icon-plus"></i> Add New Product</span></button>
+                </div>
+
+                <!-- dataTable starts -->
+                <div class="table-responsive">
+                    <table class="table data-thumb-view">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Image</th>
+                                <th>NAME</th>
+                                <th>CATEGORY</th>
+                                <th>ACTIVITY</th>
+                                <th>STOCK QUANTITY</th>
+                                <th>PRICE</th>
+                                <th>EDIT</th>
+                                <th>DELETE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="Body-products">
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td class="product-img">
+                                        <img  src="@string.Format("/Images/Products/{0}",product.ImagePath)" alt="Img placeholder">
+                                    </td>
+                                    <td class="product-name">@product.Name</td>
+                                    <td class="product-category">@product.Category.Name</td>
+                                    <td><input type="checkbox" asp-for="@product.IsActive" readonly="readonly"></td>
+                                    <td>@product.StockQuantity</td>
+                                    <td class="product-price">@product.Price E£</td>
+                                    <td class="product-action">
+                                        <button onclick="EditProduct(@product.Id)" class="btn btn-outline-info"><span><i class="feather icon-edit"></i>Edit</span></button>
+                                    </td>
+                                    <td class="product-action">
+                                        <button onclick="showConfirmModal(@product.Id,'@product.Name')" class="btn btn-outline-danger"><span><i class="feather icon-trash"></i>Delete</span></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- dataTable ends -->
+            </section>
+            <!-- Data list view end -->
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+<div class="modal fade text-left" id="ProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel1"><span><i class="feather icon-plus"></i></span></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+            </div>
+        </div>
+    </div>
+</div>
+<!--Conformition Modal-->
+<div class="modal fade text-left" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalbody">
+                <div id="Name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="confirmYes()">Yes</button>
+                <button class="btn btn-primary" onclick="hideConfirmModal()">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script src="~/app-assets/vendors/js/extensions/dropzone.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.bootstrap4.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/buttons.bootstrap.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/dataTables.select.min.js"></script>
+    <script src="~/app-assets/vendors/js/tables/datatable/datatables.checkboxes.min.js"></script>
+    <script src="~/app-assets/js/scripts/ui/data-list-view.js"></script>
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        let _ProductId;
+        $('#AddNewProduct').click(function () {
+            document.getElementById("myModalLabel1").textContent = "";
+            var url = "/Product/AddNewProduct";
+            $.get(url, function (data) {
+                document.getElementById("myModalLabel1").textContent = "Add New Product";
+                $('#modalbody').html(data);
+                var form = document.getElementById("Form");
+                $(form).removeData("validator")    // Added by jQuery Validation
+                    .removeData("unobtrusiveValidation");   // Added by jQuery Unobtrusive Validation
+                $.validator.unobtrusive.parse(form);
+                /************* */
+
+                $('#ProductModal').modal('show');
+            });
+        });
+        function EditProduct(ProductId) {
+            document.getElementById("myModalLabel1").textContent = "";
+            $.ajax({
+                url: "/Product/EditProduct",
+                data: { "ProductId": ProductId },
+                success: function (result) {
+                    document.getElementById("myModalLabel1").textContent = "Edit Product";
+                    $("#modalbody").html(result);
+                    var form = document.getElementById("Form");
+                    $(form).removeData("validator")    // Added by jQuery Validation
+                        .removeData("unobtrusiveValidation");  // Added by jQuery Unobtrusive Validation
+                    $.validator.unobtrusive.parse(form);
+
+                    $('#ProductModal').modal('show');
+                }
+            });
+        }
+        function Template(product) {
+            let productbody = "<tr>";
+            productbody += "<td></td>";
+            productbody += "<td class='product-img'>";
+            productbody += "<img src='/Images/Products/" + product.imagePath + "' alt='Img placeholder'>";
+            productbody += "</td>";
+            productbody += "<td class='product-name'>" + product.name + "</td>";
+            productbody += "<td class='product-category'>" + product.categoryName + "</td>";
+            productbody += "<td><input type='checkbox' checked='" + product.isActive + "' readonly='readonly'></td>";
+            productbody += "<td>" + product.stockQuantity + "</td>";
+            productbody += "<td class='product-price'>" + product.price + " E£</td>";
+            productbody += "<td class='product-action'>";
+            productbody += "<button onclick='EditProduct(" + product.id + ")' class='btn btn-outline-info'><span><i class='feather icon-edit'></i>Edit</span></button>";
+            productbody += "</td>";
+            productbody += "<td class='product-action'>";
+            productbody += "<button onclick='showConfirmModal(" + product.id + ", \"" + product.name + "\")' class='btn btn-outline-danger'><span><i class='feather icon-trash'></i>Delete</span></button>";
+            productbody += "</td>";
+            productbody += "</tr>";
+
+            return productbody;
+        }
+        function showConfirmModal(ProductId, name) {
+            $('#confirmModal').modal('show');
+            document.getElementById("Name").innerHTML = "";
+            document.getElementById("Name").innerHTML += "<h5 class='modal-title'> Are you Sure to Delete " + name + " ? </h5>";
+            _ProductId = ProductId;
+        }
+        function confirmYes() {
+            $.ajax({
+                url: "/Product/DeleteProduct",
+                data: { "Id": _ProductId },
+                success: function (result) {
+                    if (result === true) {
+                        //$.ajax({
+                        //    url: "/Product/GetAllProductsPerSeller",
+                        //    success: function (data) {
+                        //        let itemHtml = "";
+                        //        Products = data;
+                        //        for (let i = 0; i < data.length; i++) {
+                        //            itemHtml = itemHtml + Template(data[i]);
+                        //        }
+                        //        $("#Body-products").html(itemHtml);
+                        //    }
+                        //});
+                        location.reload();
+                    }
+                }
+            });
+            hideConfirmModal();
+
+        }
+        function hideConfirmModal() {
+            $('#confirmModal').modal('hide');
+        }
+
+    </script>
+}

@@ -1,0 +1,28 @@
+﻿@model VmRegister
+<form id="Form" asp-controller="ManageUsers" asp-action="RegisterSeller">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-label-group">
+        <input type="text" asp-for="UserName" class="form-control" placeholder="UserName">
+        <label for="inputName">Name</label>
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+    <div class="form-label-group">
+        <input type="email" asp-for="Email" class="form-control" placeholder="Email">
+        <label for="inputEmail">Email</label>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-label-group">
+        <input type="password" asp-for="Password" class="form-control" placeholder="Password">
+        <label for="inputPassword">Password</label>
+        <span asp-validation-for="Password" class="text-danger"></span>
+
+    </div>
+    <div class="form-label-group">
+        <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password">
+        <label for="inputConfPassword">Confirm Password</label>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+</form>
